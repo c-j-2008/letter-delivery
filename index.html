@@ -13,6 +13,16 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="night-sky" aria-hidden="true">
+      <span class="star star-1"></span>
+      <span class="star star-2"></span>
+      <span class="star star-3"></span>
+      <span class="star star-4"></span>
+      <span class="star star-5"></span>
+      <span class="heart-float heart-1">&hearts;</span>
+      <span class="heart-float heart-2">&hearts;</span>
+      <span class="heart-float heart-3">&hearts;</span>
+    </div>
     <main class="app-shell">
       <section class="intro-screen" data-screen="intro" aria-label="Open letter">
         <div class="sky-dots" aria-hidden="true"></div>
@@ -36,14 +46,32 @@
       <section class="letter-room hidden" data-screen="room" aria-label="Letter delivery room">
         <header class="room-header">
           <div>
-            <p class="eyebrow">private delivery</p>
             <h1>Moon Girl & Pen Boy</h1>
           </div>
-          <div class="cloud-status" data-cloud-status>
-            <span class="status-dot"></span>
-            <span>Local preview</span>
+          <div class="header-actions">
+            <div class="cloud-status" data-cloud-status>
+              <span class="status-dot"></span>
+              <span>Local preview</span>
+            </div>
           </div>
         </header>
+
+        <button class="bin-button" type="button" data-open-bin aria-label="Open recycle bin">♻</button>
+
+        <section class="stats-panel" aria-label="Letter statistics">
+          <div>
+            <span data-stat="letters">0</span>
+            <small>Letters exchanged:</small>
+          </div>
+          <div>
+            <span data-stat="words">0</span>
+            <small>Words written:</small>
+          </div>
+          <div>
+            <span data-stat="unread">0</span>
+            <small>💌 Unread letters:</small>
+          </div>
+        </section>
 
         <section class="stage" aria-label="Wallets and letter">
           <article class="wallet wallet-moon" data-wallet="moon">
@@ -104,6 +132,33 @@
               <span>Letter</span>
               <textarea data-body rows="8" placeholder="Write what your heart wants to say..." required></textarea>
             </label>
+            <label>
+              <span>Custom Stamps</span>
+              <select data-stamp>
+                <option value="🌙 Moon Stamp">🌙 Moon Stamp</option>
+                <option value="✒️ Ink Stamp">✒️ Ink Stamp</option>
+                <option value="❤️ Love Stamp">❤️ Love Stamp</option>
+                <option value="✨ Starry Night Stamp">✨ Starry Night Stamp</option>
+                <option value="🌌 Midnight Secret Stamp">🌌 Midnight Secret Stamp</option>
+                <option value="🌙 Moon Girl Official Seal">🌙 Moon Girl Official Seal</option>
+                <option value="✒️ Pen Boy Official Seal">✒️ Pen Boy Official Seal</option>
+                <option value="🌙✨ Moonlight Delivery">🌙✨ Moonlight Delivery</option>
+                <option value="💫 Across The Stars">💫 Across The Stars</option>
+                <option value="🦋 Butterfly Message">🦋 Butterfly Message</option>
+                <option value="🌹 Pressed Rose Letter">🌹 Pressed Rose Letter</option>
+                <option value="☁️ Dream Mail">☁️ Dream Mail</option>
+                <option value="🌠 Wish Upon A Star">🌠 Wish Upon A Star</option>
+                <option value="🌈 Hope Stamp">🌈 Hope Stamp</option>
+                <option value="🫂 Miss You Stamp">🫂 Miss You Stamp</option>
+              </select>
+            </label>
+            <label>
+              <span>Delivery time</span>
+              <select data-delivery>
+                <option value="air">✈️ Air Mail — 18h</option>
+                <option value="express">🚀 Express Mail — 1h</option>
+              </select>
+            </label>
             <button class="send-btn" type="submit">Send letter</button>
           </form>
 
@@ -124,13 +179,61 @@
       </section>
     </main>
 
+    <section class="bin-panel hidden" data-bin-panel aria-label="Recycle bin">
+      <div class="bin-card">
+        <div class="bin-head">
+          <div>
+            <p class="eyebrow">protected bin</p>
+            <h2>Recycle Bin</h2>
+          </div>
+          <button class="icon-btn" type="button" data-close-bin aria-label="Close recycle bin">&times;</button>
+        </div>
+        <form class="bin-lock" data-bin-lock>
+          <label>
+            <span>PIN</span>
+            <input data-bin-pin inputmode="numeric" maxlength="4" />
+          </label>
+          <button class="send-btn" type="submit">Unlock</button>
+          <p class="bin-error" data-bin-error></p>
+        </form>
+        <div class="bin-list hidden" data-bin-list></div>
+      </div>
+    </section>
+
     <template id="letter-template">
       <article class="letter-card">
+        <button class="letter-envelope" type="button" aria-expanded="false">
+          <span class="mini-envelope" aria-hidden="true">
+            <span class="mini-envelope-back"></span>
+            <span class="mini-paper"></span>
+            <span class="mini-envelope-flap"></span>
+            <span class="mini-envelope-front"></span>
+            <span class="mini-seal">&hearts;</span>
+          </span>
+          <span class="letter-summary">
+            <span class="letter-meta"></span>
+            <span class="letter-title"></span>
+            <span class="letter-stamp"></span>
+            <span class="arrival-status"></span>
+          </span>
+        </button>
+        <div class="letter-actions">
+          <button class="delete-letter" type="button">Delete letter</button>
+        </div>
+        <div class="unfolded-paper">
+          <p class="letter-body"></p>
+        </div>
+      </article>
+    </template>
+
+    <template id="bin-template">
+      <article class="bin-letter">
         <div>
           <p class="letter-meta"></p>
           <h3></h3>
+          <small></small>
         </div>
-        <p class="letter-body"></p>
+        <button type="button" data-restore-letter>Restore</button>
       </article>
     </template>
 

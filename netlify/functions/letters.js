@@ -3,7 +3,7 @@ const GIST_FILENAME = "letters.json";
 const headers = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
   "Content-Type": "application/json",
 };
 
@@ -29,6 +29,18 @@ exports.handler = async (event) => {
       const letter = JSON.parse(event.body || "{}");
       const letters = await readLetters(token, gistId);
       const nextLetters = [cleanLetter(letter), ...letters];
+      await writeLetters(token, gistId, nextLetters);
+      return json(200, nextLetters);
+    }
+
+    if (event.httpMethod === "DELETE") {
+      const id = event.queryStringParameters?.id;
+      if (!id) {
+        return json(400, { error: "Missing letter id." });
+      }
+
+      const letters = await readLetters(token, gistId);
+      const nextLetters = letters.filter((letter) => getLetterId(letter) !== id);
       await writeLetters(token, gistId, nextLetters);
       return json(200, nextLetters);
     }
@@ -85,13 +97,23 @@ async function githubFetch(token, url, options = {}) {
 }
 
 function cleanLetter(letter) {
+  const createdAt = letter.createdAt || new Date().toISOString();
   return {
+    id: letter.id || `${Date.now()}-${Math.random()}`,
     title: String(letter.title || "").slice(0, 80),
     body: String(letter.body || "").slice(0, 5000),
+    stamp: String(letter.stamp || "💌 Secret Stamp").slice(0, 80),
+    deliveryType: letter.deliveryType === "express" ? "express" : "air",
+    deliveryLabel: String(letter.deliveryLabel || "✈️ Air Mail").slice(0, 40),
+    deliverAt: letter.deliverAt || createdAt,
     from: letter.from === "moon" ? "moon" : "pen",
     to: letter.to === "pen" ? "pen" : "moon",
-    createdAt: letter.createdAt || new Date().toISOString(),
+    createdAt,
   };
+}
+
+function getLetterId(letter) {
+  return letter.id || `${letter.from}-${letter.to}-${letter.createdAt}-${letter.title}`;
 }
 
 function json(statusCode, body) {
